@@ -6,6 +6,7 @@ export async function POST(req: Request, {params}: {params: {storeId: string}}) 
     try {
         const { userId } = await auth();
         const body = await req.json();
+        const {storeId} = await params
 
         const { name, value } = body;
 
@@ -22,13 +23,13 @@ export async function POST(req: Request, {params}: {params: {storeId: string}}) 
             return new NextResponse("Value is required", { status: 400 })
         }
 
-        if (!params.storeId) {
+        if (!storeId) {
             return new NextResponse("Store id is required", { status: 400 })
         }
 
         const storeByUserId = await prismadb.store.findFirst({
             where: {
-                id: params.storeId,
+                id: storeId,
                 userId
             }
         })
@@ -41,7 +42,7 @@ export async function POST(req: Request, {params}: {params: {storeId: string}}) 
             data: {
                 name,
                 value,
-                storeId: params.storeId
+                storeId: storeId
             }
         });
 
@@ -54,14 +55,15 @@ export async function POST(req: Request, {params}: {params: {storeId: string}}) 
 
 export async function GET(req: Request, { params }: { params: { storeId: string } }) {
     try {
+        const { storeId } = await params
         
-        if (!params.storeId) {
+        if (!storeId) {
             return new NextResponse("Store id is required", { status: 400 })
         }
 
         const sizes = await prismadb.size.findMany({
             where: {
-                storeId: params.storeId
+                storeId: storeId
             }
         });
 
